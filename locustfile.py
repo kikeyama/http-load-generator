@@ -34,7 +34,7 @@ class RestUser(HttpUser):
 
     # Python Flask
     @tag('flask_auto')
-    @task(5)
+    @task(3)
     def flask_root(self):
         host = 'http://' + os.environ.get('FLASK_HOST', 'localhost:5050')
         name = random.choice(table_key_names)
@@ -84,7 +84,7 @@ class RestUser(HttpUser):
         self.client.get("%s/api/demo" % host, params={"status": spring_status}, name="/api/demo")
 
     @tag('spring_auto')
-    @task(5)
+    @task
     def spring_flask(self):
         host = 'http://' + os.environ.get('SPRING_HOST', 'localhost:8080')
         name = random.choice(table_key_names)
