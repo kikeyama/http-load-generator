@@ -92,7 +92,7 @@ class RestUser(HttpUser):
         self.client.get("%s/api/demo" % host, params={"status": spring_status}, name="/api/demo")
 
     @tag('spring_auto')
-    @task
+    @task(5)
     def spring_flask(self):
         host = 'http://' + os.environ.get('SPRING_HOST', 'localhost:8080')
         name = random.choice(table_key_names)
@@ -104,14 +104,16 @@ class RestUser(HttpUser):
         host = 'http://' + os.environ.get('SPRING_HOST', 'localhost:8080')
         self.client.post("%s/api/post" % host, {
             'message': 'hello world'
+        }, headers={
+            'Content-Type': 'application/json'
         }, name="/api/post (spring)")
 
     @tag('spring_auto')
-    @task
+    @task(6)
     def spring_gorilla_id(self):
         host = 'http://' + os.environ.get('SPRING_HOST', 'localhost:8080')
         httpstatus = random.choice(gorilla_httpstatus)
-        self.client.get("%s/api/gorilla/id" % host, params={"httpstatus": httpstatus}, name="/api/gorilla/id")
+        self.client.get("%s/api/gorilla/id" % host, params={"httpStatus": httpstatus}, name="/api/gorilla/id")
 
     # Go Gorilla
     @tag('gorilla_auto')
@@ -126,7 +128,9 @@ class RestUser(HttpUser):
         host = 'http://' + os.environ.get('GORILLA_HOST', 'localhost:9090')
         self.client.post("%s/api/post" % host, {
             'message': 'hello world'
-        }, name="/api/post (gorilla)")
+        }, headers={
+            'Content-Type': 'application/json'
+        }, name="/api/post (gorilla/mux)")
 
     @tag('gorilla_auto')
     @task
