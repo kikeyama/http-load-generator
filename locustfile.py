@@ -21,6 +21,15 @@ spring_statuses = [
     'other'
     ]
 
+gorilla_httpstatus = [
+    '200',
+    '302',
+    '404',
+    '418',
+    '500',
+    '502'
+]
+
 
 class RestUser(HttpUser):
     wait_time = between(5, 15)
@@ -73,7 +82,6 @@ class RestUser(HttpUser):
     @task
     def spring_root(self):
         host = 'http://' + os.environ.get('SPRING_HOST', 'localhost:8080')
-        name = random.choice(table_key_names)
         self.client.get("%s/" % host, name="/ (spring)")
 
     @tag('spring_auto')
@@ -88,7 +96,7 @@ class RestUser(HttpUser):
     def spring_flask(self):
         host = 'http://' + os.environ.get('SPRING_HOST', 'localhost:8080')
         name = random.choice(table_key_names)
-        self.client.get("%s/api/flask" % host, params={"name": name}, name="/api/lambda")
+        self.client.get("%s/api/flask" % host, params={"name": name}, name="/api/flask")
 
     @tag('spring_auto')
     @task
@@ -97,4 +105,32 @@ class RestUser(HttpUser):
         self.client.post("%s/api/post" % host, {
             'message': 'hello world'
         }, name="/api/post (spring)")
+
+    @tag('spring_auto')
+    @task
+    def spring_gorilla_id(self):
+        host = 'http://' + os.environ.get('SPRING_HOST', 'localhost:8080')
+        httpstatus = random.choice(gorilla_httpstatus)
+        self.client.get("%s/api/gorilla/id" % host, params={"httpstatus": httpstatus}, name="/api/gorilla/id")
+
+    # Go Gorilla
+    @tag('gorilla_auto')
+    @task
+    def gorilla_root(self):
+        host = 'http://' + os.environ.get('GORILLA_HOST', 'localhost:9090')
+        self.client.get("%s/" % host, name="/ (gorilla/mux)")
+
+    @tag('gorilla_auto')
+    @task
+    def gorilla_post(self):
+        host = 'http://' + os.environ.get('GORILLA_HOST', 'localhost:9090')
+        self.client.post("%s/api/post" % host, {
+            'message': 'hello world'
+        }, name="/api/post (gorilla)")
+
+    @tag('gorilla_auto')
+    @task
+    def gorilla_grpc(self):
+        host = 'http://' + os.environ.get('GORILLA_HOST', 'localhost:9090')
+        self.client.get("%s/api/grpc" % host)
 
