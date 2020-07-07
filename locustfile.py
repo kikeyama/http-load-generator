@@ -1,4 +1,4 @@
-import random, os
+import random, os, json
 from locust import HttpUser, TaskSet, between, task, tag
 
 table_key_names = [
@@ -73,7 +73,7 @@ class RestUser(HttpUser):
     @task
     def flask_post(self):
         host = 'http://' + os.environ.get('FLASK_HOST', 'localhost:5050')
-        self.client.post("%s/api/post" % host, {
+        self.client.post("%s/api/post" % host, data={
             'message': 'hello world'
         }, name="/api/post (flask)")
 
@@ -102,9 +102,9 @@ class RestUser(HttpUser):
     @task
     def spring_post(self):
         host = 'http://' + os.environ.get('SPRING_HOST', 'localhost:8080')
-        self.client.post("%s/api/post" % host, {
+        self.client.post("%s/api/post" % host, data=json.dumps({
             'message': 'hello world'
-        }, headers={
+        }), headers={
             'Content-Type': 'application/json'
         }, name="/api/post (spring)")
 
@@ -126,9 +126,9 @@ class RestUser(HttpUser):
     @task
     def gorilla_post(self):
         host = 'http://' + os.environ.get('GORILLA_HOST', 'localhost:9090')
-        self.client.post("%s/api/post" % host, {
+        self.client.post("%s/api/post" % host, data=json.dumps({
             'message': 'hello world'
-        }, headers={
+        }), headers={
             'Content-Type': 'application/json'
         }, name="/api/post (gorilla/mux)")
 
