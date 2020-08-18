@@ -73,8 +73,10 @@ class RestUser(HttpUser):
     @task
     def flask_post(self):
         host = 'http://' + os.environ.get('FLASK_HOST', 'localhost:5050')
-        self.client.post("%s/api/post" % host, data={
+        self.client.post("%s/api/post" % host, data=json.dumps({
             'message': 'hello world'
+        }), headers={
+            'Content-Type': 'application/json'
         }, name="/api/post (flask)")
 
     # Java Spring

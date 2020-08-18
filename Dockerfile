@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.8
 ADD locustfile.py /
 ADD requirements.txt /
 # ENV FLASK_HOST <FLASK_HOST>    # localhost:5050
