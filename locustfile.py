@@ -136,7 +136,33 @@ class RestUser(HttpUser):
 
     @tag('gorilla_auto')
     @task
-    def gorilla_grpc(self):
+    def gorilla_grpc_list(self):
         host = 'http://' + os.environ.get('GORILLA_HOST', 'localhost:9090')
-        self.client.get("%s/api/grpc" % host)
+        self.client.get("%s/api/grpc/animal" % host)
 
+    @tag('gorilla_auto')
+    @task
+    def gorilla_grpc_get(self):
+        host = 'http://' + os.environ.get('GORILLA_HOST', 'localhost:9090')
+        self.client.get("%s/api/grpc/animal/a27628d8-e3b3-4da3-98c7-0f33efc7f45f" % host)
+
+    @tag('gorilla_auto')
+    @task
+    def gorilla_grpc_post_delete(self):
+        host = 'http://' + os.environ.get('GORILLA_HOST', 'localhost:9090')
+        r = self.client.post("%s/api/grpc/animal" % host, data=json.dumps({
+            'type': 'locust', 
+            'name': 'taro', 
+            'height': 100, 
+            'weight': 200, 
+            'region': [
+              'asia'
+            ], 
+            'isCattle': False
+        }), headers={
+            'Content-Type': 'application/json'
+        })
+        dict_r = json.loads(r.text)
+        animal_id = dict_r.get('id', '')
+        self.client.get("%s/api/grpc/animal/%s" % (host, animal_id), name="/api/grpc/animal/{id:[0-9a-f-]+}")
+        self.client.delete("%s/api/grpc/animal/%s" % (host, animal_id), name="/api/grpc/animal/{id:[0-9a-f-]+}")
