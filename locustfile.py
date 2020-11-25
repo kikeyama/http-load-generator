@@ -117,6 +117,13 @@ class RestUser(HttpUser):
         httpstatus = random.choice(gorilla_httpstatus)
         self.client.get("%s/api/gorilla/id" % host, params={"httpStatus": httpstatus}, name="/api/gorilla/id")
 
+    @tag('spring_auto')
+    @task(3)
+    def spring_postgresql(self):
+        host = 'http://' + os.environ.get('SPRING_HOST', 'localhost:8080')
+        name = random.choice(table_key_names)
+        self.client.get("%s/api/postgresql" % host, params={"name": name}, name="/api/postgresql")
+
     # Go Gorilla
     @tag('gorilla_auto')
     @task
