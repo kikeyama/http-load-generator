@@ -173,3 +173,9 @@ class RestUser(HttpUser):
         animal_id = dict_r.get('id', '')
         self.client.get("%s/api/grpc/animal/%s" % (host, animal_id), name="/api/grpc/animal/{id:[0-9a-f-]+}")
         self.client.delete("%s/api/grpc/animal/%s" % (host, animal_id), name="/api/grpc/animal/{id:[0-9a-f-]+}")
+
+    @tag('express_auto')
+    @task(2)
+    def express_gorilla_animal(self):
+        host = 'http://' + os.environ.get('EXPRESS_HOST', 'localhost:3030')
+        self.client.get("%s/api/gorilla/animal" % host)
