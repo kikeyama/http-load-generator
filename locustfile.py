@@ -178,4 +178,10 @@ class RestUser(HttpUser):
     @task(2)
     def express_gorilla_animal(self):
         host = 'http://' + os.environ.get('EXPRESS_HOST', 'localhost:3030')
-        self.client.get("%s/api/gorilla/animal" % host)
+        self.client.get("%s/api/gorilla/animal" % host, name="/api/gorilla/animal (Node.js)")
+
+    @tag('type_express_auto')
+    @task(2)
+    def type_express_gorilla_animal(self):
+        host = 'http://' + os.environ.get('TYPE_EXPRESS_HOST', 'localhost:3031')
+        self.client.get("%s/api/gorilla/animal" % host, name="/api/gorilla/animal (TypeScript)")
