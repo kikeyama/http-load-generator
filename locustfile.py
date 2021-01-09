@@ -145,7 +145,7 @@ class RestUser(HttpUser):
     @task
     def gorilla_grpc_list(self):
         host = 'http://' + os.environ.get('GORILLA_HOST', 'localhost:9090')
-        self.client.get("%s/api/grpc/animal" % host)
+        self.client.get("%s/api/grpc/animal" % host, name="/api/grpc/animal (gorilla)")
 
     @tag('gorilla_auto')
     @task
@@ -168,20 +168,47 @@ class RestUser(HttpUser):
             'isCattle': False
         }), headers={
             'Content-Type': 'application/json'
-        })
+        }, name="/api/grpc/animal (gorilla)")
         dict_r = json.loads(r.text)
         animal_id = dict_r.get('id', '')
-        self.client.get("%s/api/grpc/animal/%s" % (host, animal_id), name="/api/grpc/animal/{id:[0-9a-f-]+}")
-        self.client.delete("%s/api/grpc/animal/%s" % (host, animal_id), name="/api/grpc/animal/{id:[0-9a-f-]+}")
+        self.client.get("%s/api/grpc/animal/%s" % (host, animal_id), name="/api/grpc/animal/{id:[0-9a-f-]+} (gorilla)")
+        self.client.delete("%s/api/grpc/animal/%s" % (host, animal_id), name="/api/grpc/animal/{id:[0-9a-f-]+} (gorilla)")
 
     @tag('express_auto')
-    @task(2)
+    @task
     def express_gorilla_animal(self):
         host = 'http://' + os.environ.get('EXPRESS_HOST', 'localhost:3030')
         self.client.get("%s/api/gorilla/animal" % host, name="/api/gorilla/animal (Node.js)")
 
+    @tag('express_auto')
+    @task
+    def express_grpc_list(self):
+        host = 'http://' + os.environ.get('EXPRESS_HOST', 'localhost:3030')
+        self.client.get("%s/api/grpc/animal" % host, name="/api/grpc/animal (express)")
+
+    @tag('express_auto')
+    @task
+    def express_grpc_post_delete(self):
+        host = 'http://' + os.environ.get('EXPRESS_HOST', 'localhost:3030')
+        r = self.client.post("%s/api/grpc/animal" % host, data=json.dumps({
+            'type': 'locust', 
+            'name': 'taro', 
+            'height': 100, 
+            'weight': 200, 
+            'region': [
+              'asia'
+            ], 
+            'isCattle': False
+        }), headers={
+            'Content-Type': 'application/json'
+        }, name="/api/grpc/animal (express)")
+        dict_r = json.loads(r.text)
+        animal_id = dict_r.get('id', '')
+        self.client.get("%s/api/grpc/animal/%s" % (host, animal_id), name="/api/grpc/animal/{id:[0-9a-f-]+} (express)")
+        self.client.delete("%s/api/grpc/animal/%s" % (host, animal_id), name="/api/grpc/animal/{id:[0-9a-f-]+} (express)")
+
     @tag('type_express_auto')
-    @task(2)
+    @task
     def type_express_gorilla_animal(self):
         host = 'http://' + os.environ.get('TYPE_EXPRESS_HOST', 'localhost:3031')
         self.client.get("%s/api/gorilla/animal" % host, name="/api/gorilla/animal (TypeScript)")
